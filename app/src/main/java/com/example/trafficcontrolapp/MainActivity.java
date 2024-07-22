@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -27,20 +28,17 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String tag = "MainActivity";
 
     public static BluetoothAdapter bluetoothAdapter;
     private ArrayAdapter<String> devicesArrayAdapter;
     private final ArrayList<BluetoothDevice> deviceList = new ArrayList<>();
 
-//    private final String NAME = "HC-05";
-    public final UUID ARDUINO_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private ConnectThread connectThread;
     private ConnectedThread connectedThread;
-
-    public MainActivity() {
-    }
 
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -49,9 +47,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d(tag, "onCreate: Initializing Bluetooth adapter");
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (bluetoothAdapter == null) {
+            Log.e(tag, "onCreate: Bluetooth is not available");
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -88,11 +88,13 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void discoverDevices() {
+        Log.d(tag, "discoverDevices: Starting device discovery");
         devicesArrayAdapter.clear();
         deviceList.clear();
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
+                Log.d(tag, "discoverDevices: Paired device found: " + device.getName() + " [" + device.getAddress() + "]");
                 devicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 deviceList.add(device);
             }
@@ -109,13 +111,16 @@ public class MainActivity extends AppCompatActivity {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.d(tag, "onReceive: Device found: " + device.getName() + " [" + device.getAddress() + "]");
                 devicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 deviceList.add(device);
             }
         }
     };
 
+    @SuppressLint("MissingPermission")
     private void connectToDevice(BluetoothDevice device) {
+        Log.d(tag, "connectToDevice: Connecting to device: " + device.getName() + " [" + device.getAddress() + "]");
         if (connectThread != null) {
             connectThread.cancel();
         }
@@ -133,10 +138,14 @@ public class MainActivity extends AppCompatActivity {
         public ConnectThread(BluetoothDevice device) {
             BluetoothSocket tmp = null;
             this.device = device;
+            UUID uuid = this.device.getUuids()[0].getUuid();
+            Log.d(tag, "ConnectThread: Trying to create RFCOMM socket to " + uuid.toString());
 
             try {
-                tmp = device.createRfcommSocketToServiceRecord(ARDUINO_UUID);
+                tmp = device.createRfcommSocketToServiceRecord(uuid);
+                Log.d(tag, "ConnectThread: RFCOMM socket created");
             } catch (IOException e) {
+                Log.e(tag, "ConnectThread: Socket's create() method failed", e);
                 e.printStackTrace();
             }
             this.socket = tmp;
@@ -144,15 +153,20 @@ public class MainActivity extends AppCompatActivity {
 
         @SuppressLint("MissingPermission")
         public void run() {
+            Log.d(tag, "ConnectThread: Running connect thread");
             MainActivity.bluetoothAdapter.cancelDiscovery();
 
             try {
                 socket.connect();
+                Log.d(tag, "ConnectThread: Socket connected");
                 runOnUiThread(() -> Toast.makeText(MainActivity.this, "Connected to " + device.getName(), Toast.LENGTH_SHORT).show());
             } catch (IOException connectException) {
+                Log.e(tag, "ConnectThread: Unable to connect; closing socket", connectException);
                 try {
                     socket.close();
+                    Log.d(tag, "ConnectThread: Socket closed");
                 } catch (IOException closeException) {
+                    Log.e(tag, "ConnectThread: Could not close the client socket", closeException);
                     closeException.printStackTrace();
                 }
                 return;
@@ -163,13 +177,17 @@ public class MainActivity extends AppCompatActivity {
         public void cancel() {
             try {
                 socket.close();
+                Log.d(tag, "ConnectThread: Socket closed in cancel");
             } catch (IOException e) {
+                Log.e(tag, "ConnectThread: Could not close the client socket in cancel", e);
+
                 e.printStackTrace();
             }
         }
     }
 
     private void manageConnectedSocket(BluetoothSocket socket) {
+        Log.d(tag, "manageConnectedSocket: Managing connected socket");
         connectedThread = new ConnectedThread(socket);
         connectedThread.start();
     }
@@ -186,7 +204,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
+                Log.d(tag, "ConnectedThread: Streams obtained");
             } catch (IOException e) {
+                Log.e(tag, "ConnectedThread: Error occurred when creating input/output stream", e);
                 e.printStackTrace();
             }
             mmInStream = tmpIn;
