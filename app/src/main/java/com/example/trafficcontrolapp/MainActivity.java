@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
     private static final String tag = "MainActivity";
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private final ArrayList<BluetoothDevice> deviceList = new ArrayList<>();
 
     private ConnectThread connectThread;
-    private ConnectedThread connectedThread;
+    public static ConnectedThread connectedThread;
 
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -160,6 +159,10 @@ public class MainActivity extends AppCompatActivity {
                 socket.connect();
                 Log.d(tag, "ConnectThread: Socket connected");
                 runOnUiThread(() -> Toast.makeText(MainActivity.this, "Connected to " + device.getName(), Toast.LENGTH_SHORT).show());
+
+                // navigate to TrafficControlActivity
+                 Intent intent = new Intent(MainActivity.this, TrafficControlActivity.class);
+                 startActivity(intent);
             } catch (IOException connectException) {
                 Log.e(tag, "ConnectThread: Unable to connect; closing socket", connectException);
                 try {
@@ -192,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         connectedThread.start();
     }
 
-    private class ConnectedThread extends Thread {
+    public class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
@@ -227,9 +230,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        public void write(byte[] bytes) {
+        public void write(String bytes) {
             try {
-                mmOutStream.write(bytes);
+                mmOutStream.write(bytes.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }
