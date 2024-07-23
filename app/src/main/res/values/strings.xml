@@ -3,4 +3,9 @@
     <string name="add_bluetooth">Add bluetooth</string>
     <string name="device_address">Device Address</string>
     <string name="device_name">Device Name</string>
+    <string name="left_traffic">Left Traffic</string>
+    <string name="right_traffic">Right Traffic</string>
+    <string name="red">RED</string>
+    <string name="green">GREEN</string>
+    <string name="disconnect">Disconnect</string>
 </resources>

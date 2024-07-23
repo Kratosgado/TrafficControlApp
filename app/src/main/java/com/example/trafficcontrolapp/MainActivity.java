@@ -222,17 +222,19 @@ public class MainActivity extends AppCompatActivity {
             while (true) {
                 try {
                     bytes = mmInStream.read(buffer);
-                    String readMessage = new String(buffer, 0, bytes);
-                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Received: " + readMessage, Toast.LENGTH_SHORT).show());
+                    Log.d(tag, "ConnectedThread: Message received: " + bytes);
+                    TrafficControlActivity.handleMessage(bytes);
+                    int finalBytes = bytes;
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Received: " + finalBytes, Toast.LENGTH_SHORT).show());
                 } catch (IOException e) {
                     break;
                 }
             }
         }
 
-        public void write(String bytes) {
+        public void write(int bytes) {
             try {
-                mmOutStream.write(bytes.getBytes());
+                mmOutStream.write(bytes);
             } catch (IOException e) {
                 e.printStackTrace();
             }
