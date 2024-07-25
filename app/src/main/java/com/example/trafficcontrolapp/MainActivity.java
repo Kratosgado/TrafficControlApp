@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,6 +29,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
     private static final String tag = "MainActivity";
@@ -199,6 +201,11 @@ public class MainActivity extends AppCompatActivity {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private Handler handler;
+
+        public InputStream getMmInStream() {
+            return mmInStream;
+        }
 
         public ConnectedThread(BluetoothSocket socket) {
             this.mmSocket = socket;
@@ -216,16 +223,29 @@ public class MainActivity extends AppCompatActivity {
             mmOutStream = tmpOut;
         }
 
+        public void setHandler(Handler handler){
+            this.handler = handler;
+        }
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
             while (true) {
                 try {
                     bytes = mmInStream.read(buffer);
+                    String readMessage = new String(buffer, 0, bytes);
                     Log.d(tag, "ConnectedThread: Message received: " + bytes);
-                    TrafficControlActivity.handleMessage(bytes);
-                    int finalBytes = bytes;
-                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Received: " + finalBytes, Toast.LENGTH_SHORT).show());
+                    try {
+                        int cmd = Integer.parseInt(readMessage);
+                        if (handler != null){
+                            handler.obtainMessage(cmd).sendToTarget();
+                            continue;
+                        }
+
+                    } catch (NumberFormatException e) {
+                        Log.e(tag, "ConnectedThread: Error parsing message: " + readMessage, e);
+                        e.printStackTrace();
+                    }
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this, "Arduino: " + readMessage, Toast.LENGTH_SHORT).show());
                 } catch (IOException e) {
                     break;
                 }

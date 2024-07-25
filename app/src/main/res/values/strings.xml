@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TrafficControlApp</string>
+    <string name="app_name">Traffic Control App</string>
     <string name="add_bluetooth">Add bluetooth</string>
     <string name="device_address">Device Address</string>
     <string name="device_name">Device Name</string>
