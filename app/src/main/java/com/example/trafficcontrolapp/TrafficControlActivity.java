@@ -1,28 +1,21 @@
 package com.example.trafficcontrolapp;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
-import java.util.concurrent.Executor;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
-
 public class TrafficControlActivity extends AppCompatActivity {
     private static final String tag = "TrafficControlActivity";
-    private Handler handler;
 
     MainActivity.ConnectedThread connectedThread = MainActivity.connectedThread;
 
@@ -34,6 +27,9 @@ public class TrafficControlActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.traffic_layout);
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.black));
 
         toolbar = findViewById(R.id.materialToolbar);
         toolbar.setSubtitle("Connected to thread: " + connectedThread.getName());
@@ -54,24 +50,21 @@ public class TrafficControlActivity extends AppCompatActivity {
 
         leftSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                setTrafficState(TrafficState.LYELLOW);
                 setTrafficState(TrafficState.LGREEN);
             } else {
-
                 setTrafficState(TrafficState.LRED);
             }
         });
 
         rightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                setTrafficState( TrafficState.RYELLOW);
                 setTrafficState( TrafficState.RGREEN);
             } else {
                 setTrafficState( TrafficState.RRED);
             }
         });
 
-        handler = new Handler(msg -> {
+        Handler handler = new Handler(msg -> {
             handleMessage(msg.what);
             return true;
         });
@@ -82,7 +75,7 @@ public class TrafficControlActivity extends AppCompatActivity {
     }
 
     private enum TrafficState {
-        RRED, RYELLOW, RGREEN, LRED, LYELLOW, LGREEN, RED, YELLOW, GREEN
+        RRED, RYELLOW, RGREEN, LRED, LYELLOW, LGREEN, RHUMAN, LHUMAN, NORHUMAN, NOLHUMAN
     }
 
     private void setTrafficState(TrafficState trafficState) {
@@ -110,22 +103,6 @@ public class TrafficControlActivity extends AppCompatActivity {
                 leftSwitch.setThumbTintList(getColorStateList(R.color.red));
                 leftSwitch.setTrackTintList(getColorStateList(R.color.green));
                 break;
-            case RED:
-                leftSwitch.setThumbTintList(getColorStateList(R.color.green));
-                leftSwitch.setTrackTintList(getColorStateList(R.color.red));
-                rightSwitch.setThumbTintList(getColorStateList(R.color.green));
-                rightSwitch.setTrackTintList(getColorStateList(R.color.red));
-                break;
-            case YELLOW:
-                leftSwitch.setTrackTintList(getColorStateList(R.color.yellow));
-                rightSwitch.setTrackTintList(getColorStateList(R.color.yellow));
-                break;
-            case GREEN:
-                leftSwitch.setThumbTintList(getColorStateList(R.color.red));
-                leftSwitch.setTrackTintList(getColorStateList(R.color.green));
-                rightSwitch.setThumbTintList(getColorStateList(R.color.red));
-                rightSwitch.setTrackTintList(getColorStateList(R.color.green));
-                break;
         }
         connectedThread.write(trafficState.ordinal());
     }
@@ -136,16 +113,37 @@ public class TrafficControlActivity extends AppCompatActivity {
             Log.d(tag, "state: " + trafficState.toString());
 
             switch (trafficState){
+                case RHUMAN:
+                    rightSwitch.setChecked(false);
+                    rightSwitch.setEnabled(false);
+                    toolbar.setSubtitle("Human coming on the right");
+                case NORHUMAN:
+                    rightSwitch.setEnabled(true);
+                case LHUMAN:
+                    leftSwitch.setChecked(false);
+                    leftSwitch.setEnabled(false);
+                    toolbar.setSubtitle("Human coming on the left");
+                case NOLHUMAN:
+                    leftSwitch.setEnabled(true);
                 case RRED:
-                    setTrafficState(trafficState);
+                    rightSwitch.setChecked(false);
+                    toolbar.setSubtitle("Idle");
                     break;
                 case RGREEN:
-                    leftSwitch.setChecked(true);
                     rightSwitch.setChecked(true);
+                    toolbar.setSubtitle("Incoming car on the right");
+                    break;
+                case LRED:
+                    leftSwitch.setChecked(false);
+                    toolbar.setSubtitle("Idle");
+                    break;
+                case LGREEN:
+                    leftSwitch.setChecked(true);
+                    toolbar.setSubtitle("Incoming car on the left");
                     break;
                 case RYELLOW:
-//            leftSwitch.setChecked(false);
-//            rightSwitch.setChecked(false);
+                case LYELLOW:
+                    setTrafficState(trafficState);
                     break;
             }
         }catch (Exception error){

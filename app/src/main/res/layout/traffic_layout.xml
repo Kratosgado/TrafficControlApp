@@ -21,7 +21,11 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:subtitle="Idle"
-            app:title="Traffic Control" />
+            app:subtitleCentered="true"
+            app:subtitleTextColor="@color/black"
+            app:title="Traffic Control"
+            app:titleCentered="true"
+            app:titleTextColor="@color/black" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
