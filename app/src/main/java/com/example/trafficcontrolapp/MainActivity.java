@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
     private static final String tag = "MainActivity";
@@ -210,10 +209,6 @@ public class MainActivity extends AppCompatActivity {
         private final OutputStream mmOutStream;
         private Handler handler;
 
-        public InputStream getMmInStream() {
-            return mmInStream;
-        }
-
         public ConnectedThread(BluetoothSocket socket) {
             this.mmSocket = socket;
             InputStream tmpIn = null;
@@ -260,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void write(int bytes) {
+            Log.d(tag, "Sending message to arduino");
             try {
                 mmOutStream.write(bytes);
             } catch (IOException e) {

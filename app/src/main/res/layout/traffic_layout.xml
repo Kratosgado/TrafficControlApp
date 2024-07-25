@@ -34,94 +34,148 @@
         android:layout_width="match_parent"
 
 
-        android:layout_height="wrap_content"
+        android:layout_height="705dp"
+        android:background="@color/black"
         app:layout_anchorGravity="center"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        tools:ignore="TextSizeCheck">
 
 
         <TextView
-            android:id="@+id/leftTraffic"
+            android:id="@+id/left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="72dp"
+            android:layout_marginEnd="60dp"
             android:text="@string/left_traffic"
+            android:textColor="@color/design_default_color_secondary"
             android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/right"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/rightTraffic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="108dp"
-            android:layout_marginTop="72dp"
-            android:layout_marginEnd="26dp"
-            android:text="@string/right_traffic"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/leftTraffic"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/leftSwitch"
+            android:id="@+id/right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="60dp"
-            android:layout_marginTop="157dp"
-            android:layout_marginEnd="20dp"
-            android:checked="true"
-            android:rotation="0"
-            android:scaleX="3"
-            android:scaleY="3"
-            android:splitTrack="true"
-            android:textOff="@string/red"
-            android:textOn="@string/green"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/rightSwitch"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/leftTraffic"
-            app:thumbTint="@color/red"
-            app:trackTint="@color/green"
-            tools:checked="true" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/rightSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="170dp"
-            android:layout_marginTop="157dp"
-            android:layout_marginEnd="60dp"
-            android:checked="true"
-            android:rotation="0"
-            android:scaleX="3"
-            android:scaleY="3"
-            android:showText="true"
-            android:splitTrack="true"
-            android:textOff="@string/red"
-            android:textOn="@string/green"
+            android:layout_marginTop="72dp"
+            android:layout_marginEnd="32dp"
+            android:text="@string/right_traffic"
+            android:textColor="@color/design_default_color_secondary"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/leftSwitch"
-            app:layout_constraintTop_toBottomOf="@+id/rightTraffic"
-            app:thumbTint="@color/red"
-            app:trackTint="@color/green"
-            tools:checked="true" />
+            app:layout_constraintStart_toEndOf="@+id/left"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/disconnectButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="136dp"
-            android:layout_marginTop="211dp"
             android:layout_marginEnd="137dp"
-            android:layout_marginBottom="201dp"
+            android:layout_marginBottom="48dp"
             android:backgroundTint="@color/design_default_color_secondary"
             android:text="@string/disconnect"
+            android:textColor="#5E35B1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.666"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/leftTraffic"
+            android:layout_width="177dp"
+            android:layout_height="412dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="50dp"
+            android:contentDescription="@string/left_traffic"
+            app:layout_constraintBottom_toTopOf="@+id/disconnectButton"
+            app:layout_constraintEnd_toStartOf="@+id/rightTraffic"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/leftSwitch" />
+            app:layout_constraintTop_toBottomOf="@+id/left"
+            app:layout_constraintVertical_bias="1.0"
+            app:srcCompat="@drawable/trafficicon" />
+
+        <ImageView
+            android:id="@+id/rightTraffic"
+            android:layout_width="177dp"
+            android:layout_height="412dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginBottom="50dp"
+            android:contentDescription="@string/right_traffic"
+            app:layout_constraintBottom_toTopOf="@+id/disconnectButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/leftTraffic"
+            app:layout_constraintTop_toBottomOf="@+id/right"
+            app:layout_constraintVertical_bias="0.976"
+            app:srcCompat="@drawable/trafficicon" />
+
+        <com.example.trafficcontrolapp.CircleView
+            android:id="@+id/lred"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginTop="38dp"
+            android:layout_marginEnd="43dp"
+            app:layout_constraintEnd_toEndOf="@+id/leftTraffic"
+            app:layout_constraintStart_toStartOf="@+id/leftTraffic"
+            app:layout_constraintTop_toTopOf="@+id/leftTraffic" />
+
+        <com.example.trafficcontrolapp.CircleView
+            android:id="@+id/lyellow"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="41dp"
+            app:layout_constraintEnd_toEndOf="@+id/leftTraffic"
+            app:layout_constraintStart_toStartOf="@+id/leftTraffic"
+            app:layout_constraintTop_toBottomOf="@+id/lred" />
+
+        <com.example.trafficcontrolapp.CircleView
+            android:id="@+id/lgreen"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="45dp"
+            app:layout_constraintBottom_toBottomOf="@+id/leftTraffic"
+            app:layout_constraintEnd_toEndOf="@+id/leftTraffic"
+            app:layout_constraintStart_toStartOf="@+id/leftTraffic"
+            app:layout_constraintTop_toBottomOf="@+id/lyellow" />
+
+        <com.example.trafficcontrolapp.CircleView
+            android:id="@+id/rgreen"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="@+id/rightTraffic"
+            app:layout_constraintStart_toStartOf="@+id/rightTraffic"
+            app:layout_constraintTop_toBottomOf="@+id/ryellow" />
+
+        <com.example.trafficcontrolapp.CircleView
+            android:id="@+id/ryellow"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="36dp"
+            app:layout_constraintEnd_toEndOf="@+id/rightTraffic"
+            app:layout_constraintHorizontal_bias="0.237"
+            app:layout_constraintStart_toStartOf="@+id/rightTraffic"
+            app:layout_constraintTop_toBottomOf="@+id/rred" />
+
+        <com.example.trafficcontrolapp.CircleView
+            android:id="@+id/rred"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="281dp"
+            app:layout_constraintEnd_toEndOf="@+id/rightTraffic"
+            app:layout_constraintHorizontal_bias="0.008"
+            app:layout_constraintStart_toStartOf="@+id/rightTraffic"
+            app:layout_constraintTop_toTopOf="@+id/rightTraffic" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

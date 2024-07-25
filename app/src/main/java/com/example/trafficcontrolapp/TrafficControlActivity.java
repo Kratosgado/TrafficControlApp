@@ -1,5 +1,6 @@
 package com.example.trafficcontrolapp;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -7,71 +8,27 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.materialswitch.MaterialSwitch;
 
 public class TrafficControlActivity extends AppCompatActivity {
     private static final String tag = "TrafficControlActivity";
-
-    MainActivity.ConnectedThread connectedThread = MainActivity.connectedThread;
-
-    private static MaterialSwitch leftSwitch;
-    private static MaterialSwitch rightSwitch;
+    MainActivity.ConnectedThread  connectedThread = MainActivity.connectedThread;
+    private CircleView lred, lyellow, lgreen, rred, ryellow, rgreen;
     private MaterialToolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(tag, "Starting TrafficActivity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.traffic_layout);
+        Log.d(tag, "Started TrafficActivity");
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.black));
-
-        toolbar = findViewById(R.id.materialToolbar);
-        toolbar.setSubtitle("Connected to thread: " + connectedThread.getName());
-         leftSwitch = findViewById(R.id.leftSwitch);
-         rightSwitch = findViewById(R.id.rightSwitch);
-        Button disconnectButton = findViewById(R.id.disconnectButton);
-
-        // animate the two switches, rotate them 90 degrees
-        leftSwitch.animate().rotation(90);
-        rightSwitch.animate().rotation(90);
-
-        disconnectButton.setOnClickListener(v -> {
-            connectedThread.cancel();
-            getOnBackPressedDispatcher().onBackPressed();
-            finish();
-        });
-
-
-        leftSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                setTrafficState(TrafficState.LGREEN);
-            } else {
-                setTrafficState(TrafficState.LRED);
-            }
-        });
-
-        rightSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                setTrafficState( TrafficState.RGREEN);
-            } else {
-                setTrafficState( TrafficState.RRED);
-            }
-        });
-
-        Handler handler = new Handler(msg -> {
-            handleMessage(msg.what);
-            return true;
-        });
-
-        if (connectedThread != null){
-            connectedThread.setHandler(handler);
-        }
+        setup();
     }
 
     private enum TrafficState {
@@ -80,28 +37,33 @@ public class TrafficControlActivity extends AppCompatActivity {
 
     private void setTrafficState(TrafficState trafficState) {
         runOnUiThread(() -> Toast.makeText(this, "Sending Traffic State: " + trafficState.toString(), Toast.LENGTH_SHORT).show());
+        if (trafficState.compareTo(TrafficState.LRED) < 0) {
+            rgreen.setAlpha(0);
+            rred.setAlpha(0);
+            ryellow.setAlpha(0);
+        }else if (trafficState.compareTo(TrafficState.RHUMAN) < 0){
+            rgreen.setAlpha(0);
+            rred.setAlpha(0);
+            ryellow.setAlpha(0);
+        }
         switch (trafficState) {
             case RRED:
-                rightSwitch.setThumbTintList(getColorStateList(R.color.green));
-                rightSwitch.setTrackTintList(getColorStateList(R.color.red));
-                break;
-            case RYELLOW:
-                rightSwitch.setTrackTintList(getColorStateList(R.color.yellow));
+                rred.setAlpha(1);
                 break;
             case RGREEN:
-                rightSwitch.setThumbTintList(getColorStateList(R.color.red));
-                rightSwitch.setTrackTintList(getColorStateList(R.color.green));
+                rgreen.setAlpha(1);
                 break;
-            case LRED:
-                leftSwitch.setThumbTintList(getColorStateList(R.color.green));
-                leftSwitch.setTrackTintList(getColorStateList(R.color.red));
-                break;
-            case LYELLOW:
-                leftSwitch.setTrackTintList(getColorStateList(R.color.yellow));
+            case RYELLOW:
+                ryellow.setAlpha(1);
                 break;
             case LGREEN:
-                leftSwitch.setThumbTintList(getColorStateList(R.color.red));
-                leftSwitch.setTrackTintList(getColorStateList(R.color.green));
+                lgreen.setAlpha(1);
+                break;
+            case LRED:
+                lred.setAlpha(1);
+                break;
+            case LYELLOW:
+                lyellow.setAlpha(1);
                 break;
         }
         connectedThread.write(trafficState.ordinal());
@@ -114,31 +76,31 @@ public class TrafficControlActivity extends AppCompatActivity {
 
             switch (trafficState){
                 case RHUMAN:
-                    rightSwitch.setChecked(false);
-                    rightSwitch.setEnabled(false);
+                    setTrafficState(TrafficState.RRED);
+                    setRightEnabled(false);
                     toolbar.setSubtitle("Human coming on the right");
                 case NORHUMAN:
-                    rightSwitch.setEnabled(true);
+                    setRightEnabled(true);
                 case LHUMAN:
-                    leftSwitch.setChecked(false);
-                    leftSwitch.setEnabled(false);
+                    setTrafficState(TrafficState.LRED);
+                    setLeftEnabled(false);
                     toolbar.setSubtitle("Human coming on the left");
                 case NOLHUMAN:
-                    leftSwitch.setEnabled(true);
+                    setLeftEnabled(true);
                 case RRED:
-                    rightSwitch.setChecked(false);
+                    setTrafficState(TrafficState.RRED);
                     toolbar.setSubtitle("Idle");
                     break;
                 case RGREEN:
-                    rightSwitch.setChecked(true);
+                    setTrafficState(TrafficState.RGREEN);
                     toolbar.setSubtitle("Incoming car on the right");
                     break;
                 case LRED:
-                    leftSwitch.setChecked(false);
+                   setTrafficState(TrafficState.LRED);
                     toolbar.setSubtitle("Idle");
                     break;
                 case LGREEN:
-                    leftSwitch.setChecked(true);
+                   setTrafficState(TrafficState.LGREEN);
                     toolbar.setSubtitle("Incoming car on the left");
                     break;
                 case RYELLOW:
@@ -158,6 +120,60 @@ public class TrafficControlActivity extends AppCompatActivity {
         if (connectedThread != null) {
             connectedThread.cancel();
         }
+    }
+
+    private void setup(){
+        toolbar = findViewById(R.id.materialToolbar);
+        toolbar.setSubtitle("Connected to thread: " + connectedThread.getName());
+        lred = findViewById(R.id.lred);
+        lyellow = findViewById(R.id.lyellow);
+        lgreen = findViewById(R.id.lgreen);
+        rred = findViewById(R.id.rred);
+        ryellow = findViewById(R.id.ryellow);
+        rgreen = findViewById(R.id.rgreen);
+
+        lyellow.setColor(Color.YELLOW);
+        lyellow.setAlpha(0);
+        lgreen.setColor(Color.GREEN);
+        lgreen.setAlpha(0);
+        lyellow.setOnClickListener(v -> setTrafficState(TrafficState.LYELLOW));
+        lgreen.setOnClickListener(v -> setTrafficState(TrafficState.LGREEN));
+        lred.setOnClickListener(v -> setTrafficState(TrafficState.LRED));
+
+        ryellow.setColor(Color.YELLOW);
+        ryellow.setAlpha(0);
+        rgreen.setColor(Color.GREEN);
+        rgreen.setAlpha(0);
+        ryellow.setOnClickListener(v -> setTrafficState(TrafficState.RYELLOW));
+        rgreen.setOnClickListener(v -> setTrafficState(TrafficState.RGREEN));
+        rred.setOnClickListener(v -> setTrafficState(TrafficState.RRED));
+
+        Button disconnectButton = findViewById(R.id.disconnectButton);
+        disconnectButton.setOnClickListener(v -> {
+            connectedThread.cancel();
+            getOnBackPressedDispatcher().onBackPressed();
+            finish();
+        });
+
+        Handler handler = new Handler(msg -> {
+            handleMessage(msg.what);
+            return true;
+        });
+
+        if (connectedThread != null){
+            connectedThread.setHandler(handler);
+        }
+    }
+
+    private void setRightEnabled(boolean enabled){
+        rred.setEnabled(enabled);
+        rgreen.setEnabled(enabled);
+        ryellow.setEnabled(enabled);
+    }
+    private void setLeftEnabled(boolean enabled){
+        lred.setEnabled(enabled);
+        lgreen.setEnabled(enabled);
+        lyellow.setEnabled(enabled);
     }
 
 }
