@@ -35,16 +35,15 @@ public class TrafficControlActivity extends AppCompatActivity {
         RRED, RYELLOW, RGREEN, LRED, LYELLOW, LGREEN, RHUMAN, LHUMAN, NORHUMAN, NOLHUMAN
     }
 
-    private void setTrafficState(TrafficState trafficState) {
-        runOnUiThread(() -> Toast.makeText(this, "Sending Traffic State: " + trafficState.toString(), Toast.LENGTH_SHORT).show());
+    private void setTrafficState(TrafficState trafficState, boolean send) {
         if (trafficState.compareTo(TrafficState.LRED) < 0) {
             rgreen.setAlpha(0);
             rred.setAlpha(0);
             ryellow.setAlpha(0);
         }else if (trafficState.compareTo(TrafficState.RHUMAN) < 0){
-            rgreen.setAlpha(0);
-            rred.setAlpha(0);
-            ryellow.setAlpha(0);
+            lgreen.setAlpha(0);
+            lred.setAlpha(0);
+            lyellow.setAlpha(0);
         }
         switch (trafficState) {
             case RRED:
@@ -66,7 +65,10 @@ public class TrafficControlActivity extends AppCompatActivity {
                 lyellow.setAlpha(1);
                 break;
         }
-        connectedThread.write(trafficState.ordinal());
+        if (send) {
+            runOnUiThread(() -> Toast.makeText(this, "Sending Traffic State: " + trafficState.toString(), Toast.LENGTH_SHORT).show());
+            connectedThread.write(trafficState.ordinal());
+        }
     }
 
     public  void handleMessage(int cmd){
@@ -76,36 +78,36 @@ public class TrafficControlActivity extends AppCompatActivity {
 
             switch (trafficState){
                 case RHUMAN:
-                    setTrafficState(TrafficState.RRED);
+                    setTrafficState(TrafficState.RRED, false);
                     setRightEnabled(false);
                     toolbar.setSubtitle("Human coming on the right");
                 case NORHUMAN:
                     setRightEnabled(true);
                 case LHUMAN:
-                    setTrafficState(TrafficState.LRED);
+                    setTrafficState(TrafficState.LRED, false);
                     setLeftEnabled(false);
                     toolbar.setSubtitle("Human coming on the left");
                 case NOLHUMAN:
                     setLeftEnabled(true);
                 case RRED:
-                    setTrafficState(TrafficState.RRED);
+                    setTrafficState(TrafficState.RRED, false);
                     toolbar.setSubtitle("Idle");
                     break;
                 case RGREEN:
-                    setTrafficState(TrafficState.RGREEN);
+                    setTrafficState(TrafficState.RGREEN, false);
                     toolbar.setSubtitle("Incoming car on the right");
                     break;
                 case LRED:
-                   setTrafficState(TrafficState.LRED);
+                   setTrafficState(TrafficState.LRED, false);
                     toolbar.setSubtitle("Idle");
                     break;
                 case LGREEN:
-                   setTrafficState(TrafficState.LGREEN);
+                   setTrafficState(TrafficState.LGREEN, false);
                     toolbar.setSubtitle("Incoming car on the left");
                     break;
                 case RYELLOW:
                 case LYELLOW:
-                    setTrafficState(trafficState);
+                    setTrafficState(trafficState, false);
                     break;
             }
         }catch (Exception error){
@@ -136,17 +138,17 @@ public class TrafficControlActivity extends AppCompatActivity {
         lyellow.setAlpha(0);
         lgreen.setColor(Color.GREEN);
         lgreen.setAlpha(0);
-        lyellow.setOnClickListener(v -> setTrafficState(TrafficState.LYELLOW));
-        lgreen.setOnClickListener(v -> setTrafficState(TrafficState.LGREEN));
-        lred.setOnClickListener(v -> setTrafficState(TrafficState.LRED));
+        lyellow.setOnClickListener(v -> setTrafficState(TrafficState.LYELLOW, true));
+        lgreen.setOnClickListener(v -> setTrafficState(TrafficState.LGREEN, true));
+        lred.setOnClickListener(v -> setTrafficState(TrafficState.LRED, true));
 
         ryellow.setColor(Color.YELLOW);
         ryellow.setAlpha(0);
         rgreen.setColor(Color.GREEN);
         rgreen.setAlpha(0);
-        ryellow.setOnClickListener(v -> setTrafficState(TrafficState.RYELLOW));
-        rgreen.setOnClickListener(v -> setTrafficState(TrafficState.RGREEN));
-        rred.setOnClickListener(v -> setTrafficState(TrafficState.RRED));
+        ryellow.setOnClickListener(v -> setTrafficState(TrafficState.RYELLOW, true));
+        rgreen.setOnClickListener(v -> setTrafficState(TrafficState.RGREEN, true));
+        rred.setOnClickListener(v -> setTrafficState(TrafficState.RRED, true));
 
         Button disconnectButton = findViewById(R.id.disconnectButton);
         disconnectButton.setOnClickListener(v -> {

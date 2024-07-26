@@ -235,9 +235,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     bytes = mmInStream.read(buffer);
                     String readMessage = new String(buffer, 0, bytes);
-                    Log.d(tag, "ConnectedThread: Message received: " + bytes);
                     try {
-                        int cmd = Integer.parseInt(readMessage);
+                        int cmd = Integer.parseInt(String.valueOf(readMessage.charAt(0)));
                         if (handler != null){
                             handler.obtainMessage(cmd).sendToTarget();
                             continue;
