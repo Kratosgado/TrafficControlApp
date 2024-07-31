@@ -1,0 +1,31 @@
+Privacy Policy
+
+Effective Date: [July 31, 2024]
+
+1. Introduction
+
+Traffic Control App is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application Traffic Control App . Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not use the App.
+
+2. Information We Collect
+
+We may collect information about you in a variety of ways. The information we may collect via the App includes:
+
+2.1. Personal Data
+Personally identifiable information, such as your name, email address, and phone number, that you voluntarily give to us when you register within the App.
+
+2.2. Usage Data
+Information about your interactions with the App, such as the features you use, the time you spend on the App, and other similar information.
+
+2.3. Device Information
+Information about your device, such as your device ID, operating system, and other diagnostic data.
+
+2.4. Location Data
+We may request access or permission to and track location-based information from your mobile device, either continuously or while you are using the App, to provide location-based services. If you wish to change our access or permissions, you may do so in your device’s settings.
+
+3. Use of Your Information
+
+We use the information we collect in the following ways:
+
+To provide and maintain our Service
+To notify you about changes to our Service
+To allow you to participate in interactive features

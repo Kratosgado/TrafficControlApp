@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.trafficcontrolapp'
+    namespace 'com.kratosgado.trafficcontrolapp'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.trafficcontrolapp"
+        applicationId "com.kratosgado.trafficcontrolapp"
         minSdk 30
         targetSdk 34
         versionCode 1

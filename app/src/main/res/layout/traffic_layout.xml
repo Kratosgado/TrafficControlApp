@@ -112,7 +112,7 @@
             app:layout_constraintVertical_bias="0.976"
             app:srcCompat="@drawable/trafficicon" />
 
-        <com.example.trafficcontrolapp.CircleView
+        <com.kratosgado.trafficcontrolapp.CircleView
             android:id="@+id/lred"
             android:layout_width="88dp"
             android:layout_height="88dp"
@@ -123,7 +123,7 @@
             app:layout_constraintStart_toStartOf="@+id/leftTraffic"
             app:layout_constraintTop_toTopOf="@+id/leftTraffic" />
 
-        <com.example.trafficcontrolapp.CircleView
+        <com.kratosgado.trafficcontrolapp.CircleView
             android:id="@+id/lyellow"
             android:layout_width="88dp"
             android:layout_height="88dp"
@@ -134,7 +134,7 @@
             app:layout_constraintStart_toStartOf="@+id/leftTraffic"
             app:layout_constraintTop_toBottomOf="@+id/lred" />
 
-        <com.example.trafficcontrolapp.CircleView
+        <com.kratosgado.trafficcontrolapp.CircleView
             android:id="@+id/lgreen"
             android:layout_width="88dp"
             android:layout_height="88dp"
@@ -145,7 +145,7 @@
             app:layout_constraintStart_toStartOf="@+id/leftTraffic"
             app:layout_constraintTop_toBottomOf="@+id/lyellow" />
 
-        <com.example.trafficcontrolapp.CircleView
+        <com.kratosgado.trafficcontrolapp.CircleView
             android:id="@+id/rgreen"
             android:layout_width="88dp"
             android:layout_height="88dp"
@@ -154,7 +154,7 @@
             app:layout_constraintStart_toStartOf="@+id/rightTraffic"
             app:layout_constraintTop_toBottomOf="@+id/ryellow" />
 
-        <com.example.trafficcontrolapp.CircleView
+        <com.kratosgado.trafficcontrolapp.CircleView
             android:id="@+id/ryellow"
             android:layout_width="88dp"
             android:layout_height="88dp"
@@ -165,7 +165,7 @@
             app:layout_constraintStart_toStartOf="@+id/rightTraffic"
             app:layout_constraintTop_toBottomOf="@+id/rred" />
 
-        <com.example.trafficcontrolapp.CircleView
+        <com.kratosgado.trafficcontrolapp.CircleView
             android:id="@+id/rred"
             android:layout_width="88dp"
             android:layout_height="88dp"
